@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -44,6 +45,9 @@ public final class RecipesYmlMerger {
 		Map.entry("cut_copper", 12),
 		Map.entry("pale_oak", 13)
 	);
+
+	/** Bare #RRGGBB, which the website lore preview accepts but BreweryX prints as text. */
+	private static final Pattern BARE_HEX = Pattern.compile("(?<!&)#([0-9A-Fa-f]{6})");
 
 	private RecipesYmlMerger() {}
 
@@ -421,7 +425,8 @@ public final class RecipesYmlMerger {
 				if (text == null || text.isBlank()) {
 					continue;
 				}
-				out.add(bakeColourStops(text, colourList(map.get("colours"))));
+				List<String> colours = colourList(map.get("colours"));
+				out.add(colours.isEmpty() ? ampersandHex(text) : bakeColourStops(text, colours));
 				continue;
 			}
 			if (row == null) {
@@ -429,10 +434,14 @@ public final class RecipesYmlMerger {
 			}
 			String s = String.valueOf(row).trim();
 			if (!s.isEmpty()) {
-				out.add(s);
+				out.add(ampersandHex(s));
 			}
 		}
 		return out;
+	}
+
+	private static String ampersandHex(String line) {
+		return BARE_HEX.matcher(line).replaceAll("&#$1");
 	}
 
 	private static List<String> colourList(Object raw) {

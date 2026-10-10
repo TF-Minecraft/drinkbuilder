@@ -172,7 +172,8 @@ class RecipesYmlMergerTest {
 		recipe.put("difficulty", "4");
 		recipe.put("alcohol", 9);
 		recipe.put("lore", Arrays.asList(Map.of("text", "Lore", "colours", List.of("abcdef")),
-			Map.of(), Map.of("text", " "), Map.of("text", "\u2003"), null, " ", " plain ", 42));
+			Map.of(), Map.of("text", " "), Map.of("text", "\u2003"), null, " ", " plain ", 42,
+			Map.of("text", "#25368e Earthy &#abcdefwood"), "Mid #ABCDEF line"));
 		recipe.put("drink_message", "Hi");
 		recipe.put("drink_message_colours", List.of("123456"));
 		recipe.put("drink_title", "Title");
@@ -204,7 +205,8 @@ class RecipesYmlMergerTest {
 		assertEquals(5, section.getInt("age"));
 		assertEquals(4, section.getInt("difficulty"));
 		assertEquals(9, section.getInt("alcohol"));
-		assertEquals(List.of("&#abcdefL&#abcdefo&#abcdefr&#abcdefe", "plain", "42"), section.getStringList("lore"));
+		assertEquals(List.of("&#abcdefL&#abcdefo&#abcdefr&#abcdefe", "plain", "42",
+			"&#25368e Earthy &#abcdefwood", "Mid &#ABCDEF line"), section.getStringList("lore"));
 		assertEquals("&#123456H&#123456i", section.getString("drinkmessage"));
 		assertEquals("Title", section.getString("drinktitle"));
 		assertTrue(section.getBoolean("glint"));
